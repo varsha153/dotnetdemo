@@ -48,3 +48,23 @@ stages:
     #     publishWebProjects: true
     #     arguments: '--configuration $(buildConfiguration) -f $(dotNetFramework) --runtime $(targetRuntime) --self-contained -o $(Build.ArtifactStagingDirectory)'
     #     zipAfterPublish: true
+
+- stage: 'Deploy to Dev'
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+      name: Demo
+    environment: 'dev'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+            # No need to explicitly pass the connection details.
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'AzureCon'
+              appType: 'webAppLinux'
+              WebAppName: 'bermtecdev'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/_Raghupatik.dotnetdemo/drop'
