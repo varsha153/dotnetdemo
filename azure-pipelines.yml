@@ -49,7 +49,7 @@ stages:
     #     arguments: '--configuration $(buildConfiguration) -f $(dotNetFramework) --runtime $(targetRuntime) --self-contained -o $(Build.ArtifactStagingDirectory)'
     #     zipAfterPublish: true
 
-- stage: 'Deploy to Dev'
+- stage: 'DeploytoDev'
   jobs:
   - deployment: DeployWeb
     displayName: deploy Web App
