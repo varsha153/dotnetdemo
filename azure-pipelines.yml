@@ -28,9 +28,9 @@ stages:
     - task: Npm@1
       displayName: 'Client Tests'
       inputs:
-        command: 'custom'
+        command: 'install'
         workingDir: 'ClientApp'
-        customCommand: 'install'
+        verbose: true
 
     - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
       displayName: Publish Project 
