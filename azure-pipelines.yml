@@ -32,7 +32,7 @@ stages:
         workingDir: 'ClientApp'
         verbose: true
 
-    - script: dotnet publish -f $(dotNetFramework) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+    - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
       displayName: Publish Project 
 
  
