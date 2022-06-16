@@ -28,7 +28,7 @@ stages:
     - task: Npm@1
       displayName: 'Client Tests'
       inputs:
-        command: 'install'
+        command: 'ci'
         workingDir: 'ClientApp'
         verbose: true
 
