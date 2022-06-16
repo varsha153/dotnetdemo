@@ -25,17 +25,15 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       displayName: 'dotnet build $(buildConfiguration)'
 
-    - task: Npm@1
-      displayName: 'Client Tests'
-      inputs:
-        command: 'ci'
-        workingDir: 'ClientApp'
-        verbose: true
-
     - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
       displayName: Publish Project 
 
- 
+    - task: Npm@1
+      displayName: 'Client Tests'
+      inputs:
+        command: 'custom'
+        workingDir: 'ClientApp'
+        customCommand: run test
     
     - task: PublishBuildArtifacts@1
       inputs:
@@ -62,11 +60,10 @@ stages:
       runOnce:
         deploy:
           steps:
-            # No need to explicitly pass the connection details.
            - task: AzureRmWebAppDeployment@4
              inputs:
               ConnectionType: 'AzureRM'
               azureSubscription: 'AzureCon'
               appType: 'webAppLinux'
               WebAppName: 'bermtecdev'
-              packageForLinux: '$(System.DefaultWorkingDirectory)/_Raghupatik.dotnetdemo/drop'
+              packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
