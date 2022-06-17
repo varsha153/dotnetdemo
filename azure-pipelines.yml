@@ -14,8 +14,8 @@ pool:
 variables:
   buildConfiguration: 'Release'
   dotNetFramework: 'net6.0'
-  dotNetVersion: '6.0.300'
   targetRuntime: 'linux-x64'
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 stages:
 - stage: 'Build'
@@ -28,12 +28,12 @@ stages:
     - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
       displayName: Publish Project 
 
-    - task: Npm@1
-      displayName: 'Client Tests'
-      inputs:
-        command: 'custom'
-        workingDir: 'ClientApp'
-        customCommand: run test
+    # - task: Npm@1
+    #   displayName: 'Client Tests'
+    #   inputs:
+    #     command: 'custom'
+    #     workingDir: 'ClientApp'
+    #     customCommand: run test
     
     - task: PublishBuildArtifacts@1
       inputs:
@@ -67,3 +67,61 @@ stages:
               appType: 'webAppLinux'
               WebAppName: 'bermtecdev'
               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
+
+- stage: 'DeploytoTest'
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+      name: Demo
+    environment: 'Test'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'AzureCon'
+              appType: 'webAppLinux'
+              WebAppName: 'bermtecdev'
+              packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
+
+- stage: 'DeploytoStaging'
+  condition: and(succeeded(), eq(variables.isMain, 'true'))
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+      name: Demo
+    environment: 'Staging'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'AzureCon'
+              appType: 'webAppLinux'
+              WebAppName: 'bermtecdev'
+              packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
+
+- stage: 'DeploytoProd'
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+      name: Demo
+    environment: 'Prod'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'AzureCon'
+              appType: 'webAppLinux'
+              WebAppName: 'bermtecdev'
+              packageForLinux: '$(Agent.BuildDirectory)/drop'
