@@ -24,16 +24,23 @@ stages:
     steps:
     - script: dotnet build --configuration $(buildConfiguration)
       displayName: 'dotnet build $(buildConfiguration)'
-
-    - script: dotnet publish -f $(dotNetFramework) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
-      displayName: Publish Project 
-
+    
     - task: Npm@1
       displayName: 'Client Tests'
       inputs:
-        command: 'custom'
+        command: 'ci'
         workingDir: 'ClientApp'
-        customCommand: 'run test'
+        verbose: true
+
+    - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+      displayName: Publish Project 
+
+    # - task: Npm@1
+    #   displayName: 'Client Tests'
+    #   inputs:
+    #     command: 'custom'
+    #     workingDir: 'ClientApp'
+    #     customCommand: 'run test'
     
     - task: PublishBuildArtifacts@1
       inputs:
