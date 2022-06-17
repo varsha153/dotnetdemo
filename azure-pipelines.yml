@@ -70,46 +70,45 @@ stages:
               WebAppName: 'bermtecdev'
               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
 
-- stage: 'DeploytoTest'
-  jobs:
-  - deployment: DeployWeb
-    displayName: deploy Web App
-    pool:
-      name: Demo
-    environment: 'Test'
-    strategy: 
-      runOnce:
-        deploy:
-          steps:
-           - task: AzureRmWebAppDeployment@4
-             inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'AzureCon'
-              appType: 'webAppLinux'
-              WebAppName: 'bermtecdev'
-              packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
+# - stage: 'DeploytoTest'
+#   jobs:
+#   - deployment: DeployWeb
+#     displayName: deploy Web App
+#     pool:
+#       name: Demo
+#     environment: 'Test'
+#     strategy: 
+#       runOnce:
+#         deploy:
+#           steps:
+#            - task: AzureRmWebAppDeployment@4
+#              inputs:
+#               ConnectionType: 'AzureRM'
+#               azureSubscription: 'AzureCon'
+#               appType: 'webAppLinux'
+#               WebAppName: 'bermtecdev'
+#               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
 
-- stage: 'DeploytoStaging'
-  jobs:
-  - deployment: DeployWeb
-    displayName: deploy Web App
-    pool:
-      name: Demo
-    environment: 'Staging'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-           - task: AzureRmWebAppDeployment@4
-             inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'AzureCon'
-              appType: 'webAppLinux'
-              WebAppName: 'bermtecdev'
-              packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
+# - stage: 'DeploytoStaging'
+#   jobs:
+#   - deployment: DeployWeb
+#     displayName: deploy Web App
+#     pool:
+#       name: Demo
+#     environment: 'Staging'
+#     strategy:
+#       runOnce:
+#         deploy:
+#           steps:
+#            - task: AzureRmWebAppDeployment@4
+#              inputs:
+#               ConnectionType: 'AzureRM'
+#               azureSubscription: 'AzureCon'
+#               appType: 'webAppLinux'
+#               WebAppName: 'bermtecdev'
+#               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
 
 - stage: 'DeploytoProd'
-  condition: and(succeeded(), eq(variables.isMaster, 'true'))
   jobs:
   - deployment: DeployWeb
     displayName: deploy Web App
