@@ -15,7 +15,8 @@ variables:
   buildConfiguration: 'Release'
   dotNetFramework: 'net6.0'
   targetRuntime: 'linux-x64'
-  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
 
 stages:
 - stage: 'Build'
@@ -89,14 +90,13 @@ stages:
               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
 
 - stage: 'DeploytoStaging'
-  condition: and(succeeded(), eq(variables.isMain, 'true'))
   jobs:
   - deployment: DeployWeb
     displayName: deploy Web App
     pool:
       name: Demo
     environment: 'Staging'
-    strategy: 
+    strategy:
       runOnce:
         deploy:
           steps:
@@ -109,6 +109,7 @@ stages:
               packageForLinux: '$(Agent.BuildDirectory)/drop/*.zip'
 
 - stage: 'DeploytoProd'
+  condition: and(succeeded(), eq(variables.isMaster, 'true'))
   jobs:
   - deployment: DeployWeb
     displayName: deploy Web App
