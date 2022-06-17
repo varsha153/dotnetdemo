@@ -25,8 +25,8 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       displayName: 'dotnet build $(buildConfiguration)'
 
-    - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
-      displayName: Publish Project 
+    # - script: dotnet publish --no-build -v detailed -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+    #   displayName: Publish Project 
 
     # - task: Npm@1
     #   displayName: 'Client Tests'
@@ -34,20 +34,21 @@ stages:
     #     command: 'custom'
     #     workingDir: 'ClientApp'
     #     customCommand: run test
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish Projects
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
     
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-  
-    # - task: DotNetCoreCLI@2
-    #   displayName: Publish Projects
-    #   inputs:
-    #     command: 'publish'
-    #     publishWebProjects: true
-    #     arguments: '--configuration $(buildConfiguration) -f $(dotNetFramework) --runtime $(targetRuntime) --self-contained -o $(Build.ArtifactStagingDirectory)'
-    #     zipAfterPublish: true
+
 
 - stage: 'DeploytoDev'
   jobs:
