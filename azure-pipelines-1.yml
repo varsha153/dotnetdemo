@@ -9,7 +9,7 @@ trigger:
 - master
 
 pool:
-  name: pool2
+  name: windowsagentpool
 
 variables:
   buildConfiguration: 'Release'
